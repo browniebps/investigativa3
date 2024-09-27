@@ -38,6 +38,7 @@ Coded by www.creative-tim.com
 // Material Dashboard 2 React layouts
 import Dashboard from "layouts/dashboard";
 import Tables from "layouts/tables";
+import Clients from "layouts/clients";
 import Billing from "layouts/billing";
 import RTL from "layouts/rtl";
 import Notifications from "layouts/notifications";
@@ -53,7 +54,7 @@ const routes = [
     type: "collapse",
     name: "Dashboard",
     key: "dashboard",
-    icon: <Icon fontSize="small">dashboard</Icon>,
+    icon: <Icon fontSize="medium">dashboard</Icon>,
     route: "/dashboard",
     component: <Dashboard />,
   },
@@ -61,7 +62,7 @@ const routes = [
     type: "collapse",
     name: "Ventas",
     key: "tables",
-    icon: <Icon fontSize="small">table_view</Icon>,
+    icon: <Icon fontSize="medium">table_view</Icon>,
     route: "/tables",
     component: <Tables />,
   },
@@ -69,15 +70,15 @@ const routes = [
     type: "collapse",
     name: "Clientes",
     key: "clients",
-    icon: <Icon fontSize="small">table_view</Icon>,
-    route: "/tables",
-    component: <Tables />,
+    icon: <Icon fontSize="medium">table_view</Icon>,
+    route: "/clients",
+    component: <Clients />,
   },
   {
     type: "collapse",
     name: "Billing",
     key: "billing",
-    icon: <Icon fontSize="small">receipt_long</Icon>,
+    icon: <Icon fontSize="medium">receipt_long</Icon>,
     route: "/billing",
     component: <Billing />,
   },
@@ -85,7 +86,7 @@ const routes = [
     type: "collapse",
     name: "Profile",
     key: "profile",
-    icon: <Icon fontSize="small">person</Icon>,
+    icon: <Icon fontSize="medium">person</Icon>,
     route: "/profile",
     component: <Profile />,
   },

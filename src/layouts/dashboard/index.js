@@ -34,9 +34,17 @@ import reportsLineChartData from "layouts/dashboard/data/reportsLineChartData";
 // Dashboard components
 import Projects from "layouts/dashboard/components/Projects";
 import OrdersOverview from "layouts/dashboard/components/OrdersOverview";
+import { useEffect, useState } from "react";
 
 function Dashboard() {
   const { sales, tasks } = reportsLineChartData;
+  const [acum, setAcum] = useState(0);
+  useEffect(() => {
+    let bet = Number(402000);
+    let acu = Number(localStorage.getItem("sales"));
+    let tot = bet + acu;
+    setAcum(tot);
+  }, []);
 
   return (
     <DashboardLayout>
@@ -49,11 +57,11 @@ function Dashboard() {
                 color="dark"
                 icon="weekend"
                 title="VENTAS TOTALES"
-                count={281}
+                count={acum}
                 percentage={{
                   color: "success",
                   amount: "+55%",
-                  label: "than lask week",
+                  label: "Semana anterior",
                 }}
               />
             </MDBox>
@@ -63,11 +71,11 @@ function Dashboard() {
               <ComplexStatisticsCard
                 icon="leaderboard"
                 title="MARGEN $"
-                count="2,300"
+                count="204.300"
                 percentage={{
                   color: "success",
                   amount: "+3%",
-                  label: "than last month",
+                  label: "Que el Último mes",
                 }}
               />
             </MDBox>
@@ -78,11 +86,11 @@ function Dashboard() {
                 color="success"
                 icon="store"
                 title="MARGEN %"
-                count="34k"
+                count="34%"
                 percentage={{
                   color: "success",
                   amount: "+1%",
-                  label: "than yesterday",
+                  label: "Que Ayer",
                 }}
               />
             </MDBox>
@@ -93,11 +101,11 @@ function Dashboard() {
                 color="primary"
                 icon="person_add"
                 title="NUMERO DE VENTAS HOY"
-                count="+91"
+                count="91"
                 percentage={{
                   color: "success",
                   amount: "",
-                  label: "Just updated",
+                  label: "Recién Actualizado",
                 }}
               />
             </MDBox>

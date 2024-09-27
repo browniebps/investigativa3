@@ -127,7 +127,8 @@ function Tables() {
     const updatedProducts = [...rows, newRow];
 
     setRows([...rows, newRow]);
-    localStorage.setItem("sales", newOrder.total);
+    console.log(updatedProducts, "updataed_PRid");
+    //localStorage.setItem("products", JSON.stringify(updatedProducts));
 
     handleClose(); // Cerrar el modal después de agregar el pedido
   };
@@ -148,20 +149,14 @@ function Tables() {
                 bgColor="info"
                 borderRadius="lg"
                 coloredShadow="info"
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
               >
                 <MDTypography variant="h6" color="white">
-                  Lista de Pedidos
+                  Lista de Clientes
                 </MDTypography>
-                <Button variant="contained" color="black" onClick={handleOpen}>
-                  Nuevo Pedido
-                </Button>
               </MDBox>
               <MDBox pt={3}>
                 <DataTable
-                  table={{ columns, rows }}
+                  table={{ columns: pColumns, rows: pRows }}
                   isSorted={false}
                   entriesPerPage={false}
                   showTotalEntries={false}
