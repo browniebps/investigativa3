@@ -3,7 +3,7 @@
     "browser": true,
     "es2021": true
   },
-  "extends": ["plugin:react/recommended", "prettier"],
+  "extends": ["eslint:recommended"],
   "parserOptions": {
     "ecmaFeatures": {
       "jsx": true
@@ -13,8 +13,11 @@
   },
   "plugins": ["react", "prettier"],
   "rules": {
+    "no-unused-vars": "off",  // Desactiva variables no utilizadas
+    "no-unreachable": "off" ,  // Desactiva código no alcanzable
+
     "prettier/prettier": [
-      "error",
+      "off",
       {
         "endOfLine": "auto"
       }

@@ -55,8 +55,11 @@ export default function data() {
 
   return {
     columns: [
-      { Header: "Nombre", accessor: "full_name", width: "50%", align: "left" },
-      { Header: "Total Compras", accessor: "total_sales", align: "left" }
+      { Header: "Nombre", accessor: "project", width: "30%", align: "left" },
+      { Header: "Total Compras", accessor: "budget", align: "left" },
+      { Header: "Estado", accessor: "status", align: "center" },
+      { Header: "completion", accessor: "completion", align: "center" },
+      { Header: "action", accessor: "action", align: "center" },
     ],
 
     rows: [

@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import PropTypes from "prop-types";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
@@ -23,27 +23,49 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
+import axios from 'axios';
 
 // Data
 import authorsTableData from "layouts/tables/data/authorsTableData";
+import inventoryTableData from "layouts/tables/data/inventoryTableData";
 import projectsTableData from "layouts/tables/data/projectsTableData";
-import axios from "axios";
 
-function Tables() {
-  const { columns, rows: initialRows } = authorsTableData();
+function Inventory() {
+  const { columns, rows: initialRows } = inventoryTableData();
   const { columns: pColumns, rows: pRows } = projectsTableData();
 
-  const [rows, setRows] = useState(initialRows); // Estado para manejar los pedidos
+  const [rows, setRows] = useState(initialRows); //  Estado para manejar los pedidos
   const [open, setOpen] = useState(false); // Estado para el modal
-  const [clients, setClients] = useState([])
-  const [newClient, setNewClient] = useState([])
   const [newOrder, setNewOrder] = useState({
     name: "",
     function: "",
     status: "",
     employed: "",
-    product: "", // Producto seleccionado
+    product: "",
+    quantity_sold: 0,
+    created_at: ""
   }); // Estado para manejar los datos del nuevo pedido
+
+  const getProducts = async () => {
+    try {
+      const response = await axios.get("https://breiner-back-production.up.railway.app/api/products");
+      console.log(response.data, "respuesta products");
+      setRows(response.data)
+      //setProducts(response.data); // Guardar los usuarios en el estado
+    } catch (err) {
+      console.log("error", err);
+      //setError("Error al obtener los usuarios"); // Manejar errores
+    } finally {
+      //setLoading(false); // Ocultar el estado de carga
+    }
+  };
+  useEffect(() => {
+
+    getProducts();
+
+    console.log(rows, "FILAS")
+  }, [])
+
 
   const Author = ({ image, name, quantity }) => (
     <MDBox display="flex" alignItems="center" lineHeight={1}>
@@ -79,103 +101,46 @@ function Tables() {
   };
 
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
-  const getClients = async () => {
-    try {
-      const response = await axios.get("https://breiner-back-production.up.railway.app/api/clients/sales");
-      console.log(response.data, "respuesta clients");
-      setRows(response.data)
-      setClients(response.data); // Guardar los usuarios en el estado
-    } catch (err) {
-      console.log("error", err);
-      //setError("Error al obtener los usuarios"); // Manejar errores
-    } finally {
-      //setLoading(false); // Ocultar el estado de carga
-    }
+  const handleOpenEdit = (row) => {
+    console.log("roew", row);
   };
-
-  useEffect(() => {
-    getClients()
-  }, [])
+  const handleClose = () => setOpen(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNewClient({ ...newClient, [name]: value });
+    console.log(name, "name")
+    console.log(value, "value")
+    setNewOrder({ ...newOrder, [name]: value });
   };
   const handleProductChange = (event) => {
     setNewOrder({ ...newOrder, author: event.target.value });
   };
-  const handleAddOrder = () => {
-    console.log(newOrder, "Nueva orden");
-    const array = {
-      author: <Author name={newOrder.author} quantity={`X${newOrder.quantity}`} />,
-      function: <Job title={newOrder.name} lastname={newOrder.lastname} />,
-      status: (
-        <MDBox ml={-1}>
-          <MDBadge
-            badgeContent={newOrder.status}
-            color={newOrder.status == "PENDIENTE" ? "warning" : "success"}
-            variant="gradient"
-            size="sm"
-          />
-        </MDBox>
-      ),
-      total: (
-        <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          ${newOrder.total}
-        </MDTypography>
-      ),
-      employed: (
-        <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          23/04/18
-        </MDTypography>
-      ),
-      action: (
-        <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          Edit
-        </MDTypography>
-      ),
-    };
-    const newRow = {
-      ...array,
-      action: (
-        <Button variant="contained" color="info" size="small">
-          Editar
-        </Button>
-      ),
-    };
-    const updatedProducts = [...rows, newRow];
 
-    setRows([...rows, newRow]);
-    console.log(updatedProducts, "updataed_PRid");
-    //localStorage.setItem("products", JSON.stringify(updatedProducts));
-
-    handleClose(); // Cerrar el modal después de agregar el pedido
-  };
-
-  const saveClient = async () => {
-    console.log(newClient, "=??")
-
+  const saveOrder = async (updatedOrder) => {
+    console.log(updatedOrder, "updated")
     try {
-      const response = await axios.post('https://breiner-back-production.up.railway.app/api/clients', { client: newClient });
-      alert('Cliente agregado: ' + response.data.message);
-      setRows([...rows, newClient]);
-
-      handleClose()
+      const response = await axios.post('https://breiner-back-production.up.railway.app/api/products', updatedOrder);
+      alert('Producto agregado: ' + response.data.message);
     } catch (error) {
       console.error('Error al agregar el producto:', error);
       alert('Error al agregar el producto');
     }
   }
-  const handleAddClient = async () => {// Obtiene la fecha en formato YYYY-MM-DD
+  const handleAddOrder = async () => {
+    console.log(newOrder, "Nueva orden");
+    const currentDate = new Date().toISOString().split('T')[0]; // Obtiene la fecha en formato YYYY-MM-DD
     let updatedOrder = "";
+    setNewOrder((prevOrder) => {
+      updatedOrder = { ...prevOrder, created_date: currentDate };
+      console.log(updatedOrder, "Nueva orden después de actualizar");
+      return updatedOrder;
+    });
+    setRows([...rows, updatedOrder]);
 
-    setRows([...rows, newClient]);
-
-    const respuesta = await saveClient()
+    const respuesta = await saveOrder(updatedOrder)
     console.log(respuesta, "respuesta api")
 
+    /*
     const array = {
       author: <Author name={newOrder.author} quantity={`X${newOrder.quantity}`} />,
       function: <Job title={newOrder.name} lastname={newOrder.lastname} />,
@@ -214,8 +179,9 @@ function Tables() {
       ),
     };
     const updatedProducts = [...rows, newRow];
-
-    setNewClient([])
+    */
+    setNewOrder([])
+    localStorage.setItem("sales", newOrder.total);
 
     handleClose(); // Cerrar el modal después de agregar el pedido
   };
@@ -236,17 +202,24 @@ function Tables() {
                 bgColor="info"
                 borderRadius="lg"
                 coloredShadow="info"
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
               >
                 <MDTypography variant="h6" color="white">
-                  Lista de Clientes
+                  Inventario
                 </MDTypography>
                 <Button variant="contained" color="black" onClick={handleOpen}>
-                  Nuevo Cliente
+                  Nuevo Producto
                 </Button>
               </MDBox>
               <MDBox pt={3}>
                 <DataTable
-                  table={{ columns: pColumns, rows: rows }}
+                  table={{
+                    columns,
+                    rows: rows
+                    
+                  }}
                   isSorted={false}
                   entriesPerPage={false}
                   showTotalEntries={false}
@@ -276,31 +249,38 @@ function Tables() {
           }}
         >
           <MDTypography variant="h6" mb={2}>
-            Crear Nuevo Cliente
+            Crear Nuevo Producto
           </MDTypography>
           <TextField
             fullWidth
-            label="Nombre"
-            name="name"
-            value={newClient.name}
+            label="Producto"
+            name="product_name"
+            value={newOrder.product_name}
             onChange={handleInputChange}
             margin="normal"
           />
           <TextField
             fullWidth
-            label="Apellidos"
-            name="last_name"
-            value={newClient.last_name}
+            label="Descripción"
+            name="description"
+            value={newOrder.description}
             onChange={handleInputChange}
             margin="normal"
           />
-
+          <TextField
+            fullWidth
+            label="Cantidad"
+            name="quantity_in_stock"
+            value={newOrder.quantity_in_stock}
+            onChange={handleInputChange}
+            margin="normal"
+          />
           <Box mt={3} display="flex" justifyContent="flex-end">
             <Button onClick={handleClose} color="secondary">
               Cancelar
             </Button>
-            <Button onClick={saveClient} color="primary" variant="contained" sx={{ ml: 2 }}>
-              Guardar
+            <Button onClick={handleAddOrder} color="primary" variant="contained" sx={{ ml: 2 }}>
+              Agregar Pedido
             </Button>
           </Box>
         </Box>
@@ -309,4 +289,4 @@ function Tables() {
   );
 }
 
-export default Tables;
+export default Inventory;

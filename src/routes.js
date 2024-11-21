@@ -38,6 +38,7 @@ Coded by www.creative-tim.com
 // Material Dashboard 2 React layouts
 import Dashboard from "layouts/dashboard";
 import Tables from "layouts/tables";
+import Inventory from "layouts/inventory";
 import Clients from "layouts/clients";
 import Billing from "layouts/billing";
 import RTL from "layouts/rtl";
@@ -65,6 +66,14 @@ const routes = [
     icon: <Icon fontSize="medium">table_view</Icon>,
     route: "/tables",
     component: <Tables />,
+  },
+  {
+    type: "collapse",
+    name: "Inventario",
+    key: "inventory",
+    icon: <Icon fontSize="medium">add</Icon>,
+    route: "/inventory",
+    component: <Inventory />,
   },
   {
     type: "collapse",

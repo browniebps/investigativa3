@@ -35,15 +35,117 @@ import reportsLineChartData from "layouts/dashboard/data/reportsLineChartData";
 import Projects from "layouts/dashboard/components/Projects";
 import OrdersOverview from "layouts/dashboard/components/OrdersOverview";
 import { useEffect, useState } from "react";
+import axios from 'axios';
 
 function Dashboard() {
   const { sales, tasks } = reportsLineChartData;
-  const [acum, setAcum] = useState(0);
+  const [totalSales, setTotalSales] = useState(0);
+  const [productsSold, setProductsSold] = useState(0);
+  const [weekSales, setWeekSales] = useState(0);
+  const [monthSales, setMonthSales] = useState(0);
+  const [productMonthSales, setProductMonthSales] = useState(0);
+  const [salesToday, setSalesToday] = useState(0);
+
+  const getTotalSales = async () => {
+    const response = await axios.get("https://breiner-back-production.up.railway.app/api/total-sales")
+    setTotalSales(response.data[0].total_sales)
+    console.log(response.data[0].total_sales, "total sales")
+
+  }
+
+  const getProductsSold = async () => {
+    const response = await axios.get("https://breiner-back-production.up.railway.app/api/products/sold")
+    setProductsSold(response.data[0].quantity_sold)
+    console.log(response.data[0], "total products")
+
+  }
+
+  const getSalesToday = async () => {
+    const response = await axios.get("https://breiner-back-production.up.railway.app/api/sales/today")
+    //setSalesToday(response.data)
+    setSalesToday(response.data[0].ventas_hoy)
+
+  }
+
+
+  const getWeekSales = async () => {
+    const response = await axios.get("https://breiner-back-production.up.railway.app/api/week-sales")
+    const ventasUltimaSemana = Array(7).fill(1);
+    (response.data).forEach((registro) => {
+      // Convertimos ventas_totales a número, y si es 0, lo dejamos como 1
+      ventasUltimaSemana[registro.dia_semana - 1] = parseInt(registro.ventas_totales) === 0 ? 1 : parseInt(registro.ventas_totales);
+    });
+    // Crear la variable con el formato completo
+    const datosVentas = {
+      labels: ["L", "M", "M", "J", "V", "S", "D"],  // Las etiquetas para los días de la semana
+      datasets: {
+        label: "Ventas",
+        data: ventasUltimaSemana  // Datos de ventas para cada día
+      }
+    };
+
+    setWeekSales(datosVentas)
+
+
+  }
+
+
+  const getMonthSales = async () => {
+    const response = await axios.get("https://breiner-back-production.up.railway.app/api/month-sales")
+    const ventasMes = Array(12).fill(1);
+    const meses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+    const labels = [];
+    const data = [];
+    (response.data).forEach(item => {
+      labels.push(meses[item.mes - 1]);  // El índice de los meses comienza en 0, por lo que restamos 1
+      data.push(item.ventas_totales);  // Agregar las ventas para ese mes
+    });
+    // Crear la variable con el formato completo
+    const sales = {
+      labels: labels,
+      datasets: {
+        label: "Ventas",
+        data: data
+      }
+    };
+    setMonthSales(sales)
+    console.log(sales, "ventas")
+
+
+  }
+
+  const getProductsMonthSales = async () => {
+    const response = await axios.get("https://breiner-back-production.up.railway.app/api/products/month-sales")
+
+    const meses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+    const labels = [];
+    const data = [];
+    (response.data).forEach(item => {
+      labels.push(meses[item.mes - 1]);  // El índice de los meses comienza en 0, por lo que restamos 1
+      data.push(item.ventas_totales);  // Agregar las ventas para ese mes
+    });
+    // Crear la variable con el formato completo
+    const sales = {
+      labels: labels,
+      datasets: {
+        label: "Ventas",
+        data: data
+      }
+    };
+    setProductMonthSales(sales)
+    console.log(sales, "ventas")
+
+
+  }
+  
+
   useEffect(() => {
-    let bet = Number(402000);
-    let acu = Number(localStorage.getItem("sales"));
-    let tot = bet + acu;
-    setAcum(tot);
+    getTotalSales()
+    getProductsSold()
+    getWeekSales()
+    getMonthSales()
+    getProductsMonthSales()
+    getSalesToday()
   }, []);
 
   return (
@@ -57,7 +159,7 @@ function Dashboard() {
                 color="dark"
                 icon="weekend"
                 title="VENTAS TOTALES"
-                count={acum}
+                count={totalSales}
                 percentage={{
                   color: "success",
                   amount: "+55%",
@@ -70,8 +172,8 @@ function Dashboard() {
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
                 icon="leaderboard"
-                title="MARGEN $"
-                count="204.300"
+                title="PRODUCTOS VENDIDOS"
+                count={productsSold}
                 percentage={{
                   color: "success",
                   amount: "+3%",
@@ -101,7 +203,7 @@ function Dashboard() {
                 color="primary"
                 icon="person_add"
                 title="NUMERO DE VENTAS HOY"
-                count="91"
+                count={salesToday}
                 percentage={{
                   color: "success",
                   amount: "",
@@ -120,7 +222,7 @@ function Dashboard() {
                   title="Ventas por Día"
                   description="Last Campaign Performance"
                   date="campaign sent 2 days ago"
-                  chart={reportsBarChartData}
+                  chart={weekSales}
                 />
               </MDBox>
             </Grid>
@@ -135,7 +237,7 @@ function Dashboard() {
                     </>
                   }
                   date="updated 4 min ago"
-                  chart={sales}
+                  chart={monthSales}
                 />
               </MDBox>
             </Grid>
@@ -143,10 +245,10 @@ function Dashboard() {
               <MDBox mb={3}>
                 <ReportsLineChart
                   color="dark"
-                  title="completed tasks"
+                  title="Número de productos vendidos"
                   description="Last Campaign Performance"
                   date="just updated"
-                  chart={tasks}
+                  chart={productMonthSales}
                 />
               </MDBox>
             </Grid>
