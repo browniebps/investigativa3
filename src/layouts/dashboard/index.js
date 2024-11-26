@@ -73,11 +73,13 @@ function Dashboard() {
     const ventasUltimaSemana = Array(7).fill(1);
     (response.data).forEach((registro) => {
       // Convertimos ventas_totales a número, y si es 0, lo dejamos como 1
-      ventasUltimaSemana[registro.dia_semana - 1] = parseInt(registro.ventas_totales) === 0 ? 1 : parseInt(registro.ventas_totales);
+      ventasUltimaSemana[registro.dia_semana - 1] = parseInt(registro.ventas_totales) === 0 ? 0 : parseInt(registro.ventas_totales);
     });
+    console.log("ventas", ventasUltimaSemana);
+
     // Crear la variable con el formato completo
     const datosVentas = {
-      labels: ["L", "M", "M", "J", "V", "S", "D"],  // Las etiquetas para los días de la semana
+      labels: ["D", "L", "M", "M", "J", "V", "S"],  // Las etiquetas para los días de la semana
       datasets: {
         label: "Ventas",
         data: ventasUltimaSemana  // Datos de ventas para cada día
@@ -257,10 +259,10 @@ function Dashboard() {
         <MDBox>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6} lg={8}>
-              <Projects />
+              {/* <Projects /> */}
             </Grid>
             <Grid item xs={12} md={6} lg={4}>
-              <OrdersOverview />
+              {/*<OrdersOverview /> */}
             </Grid>
           </Grid>
         </MDBox>

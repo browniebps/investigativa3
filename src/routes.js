@@ -85,20 +85,20 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "Billing",
+    name: "Reporte",
     key: "billing",
     icon: <Icon fontSize="medium">receipt_long</Icon>,
     route: "/billing",
     component: <Billing />,
   },
-  {
+  {/*
     type: "collapse",
     name: "Profile",
     key: "profile",
     icon: <Icon fontSize="medium">person</Icon>,
     route: "/profile",
     component: <Profile />,
-  },
+*/},
 ];
 
 export default routes;
